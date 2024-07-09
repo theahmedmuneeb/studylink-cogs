@@ -12,25 +12,32 @@ class Echo(commands.Cog):
     async def echo(self, ctx, channel_input: str = None, message_id: int = None, *, message: str):
         """Echo a message to a specified channel or reply to a message."""
         # Determine the channel to send/reply message
+        channel = None
+        
         if channel_input:
             channel = await self.get_channel(ctx, channel_input)
-        else:
-            channel = ctx.channel
 
-        if not channel:
-            await ctx.send(f"Invalid channel ID or mention. Sending message to current channel.")
-            channel = ctx.channel
-        
-        # If message_id is provided, reply to the message with message_id
-        if message_id:
+        if not channel and message_id:
+            try:
+                msg = await ctx.channel.fetch_message(message_id)
+                await msg.reply(message)
+                return
+            except discord.NotFound:
+                pass
+
+        if not channel and message:
+            await ctx.send(message)
+        elif channel and message_id:
             try:
                 msg = await channel.fetch_message(message_id)
                 await msg.reply(message)
             except discord.NotFound:
                 await ctx.send(f"Message with ID {message_id} not found in {channel.mention}. Sending message to {channel.mention}.")
                 await channel.send(message)
-        else:
+        elif channel:
             await channel.send(message)
+        else:
+            await ctx.send("Invalid usage. Use `-echo <message> [<channel_id>] [<message_id>]`.")
 
     async def get_channel(self, ctx, channel_input):
         """Helper function to get channel object from input."""
