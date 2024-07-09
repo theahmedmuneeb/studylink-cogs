@@ -1,7 +1,6 @@
 import discord
 from redbot.core import commands, Config
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import box
 
 class Champ(commands.Cog):
     """A cog for making announcements."""
