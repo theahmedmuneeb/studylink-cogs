@@ -11,10 +11,9 @@ class Echo(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def echo(self, ctx, channel_input: str = None, message_id: int = None, *, message: str):
         """Echo a message to a specified channel or reply to a message."""
-        # Determine the channel to send/reply message
-        channel = None
-        
-        if channel_input:
+        if channel_input == "-":
+            channel = ctx.channel
+        else:
             channel = await self.get_channel(ctx, channel_input)
 
         if not channel and message_id:
@@ -37,19 +36,21 @@ class Echo(commands.Cog):
         elif channel:
             await channel.send(message)
         else:
-            await ctx.send("Invalid usage. Use `-echo <message> [<channel_id>] [<message_id>]`.")
+            await ctx.send("Invalid usage. Use `-echo [- | <channel_id> | #channel] [<message_id>] <message>`.")
 
     async def get_channel(self, ctx, channel_input):
         """Helper function to get channel object from input."""
         if channel_input.startswith("<#") and channel_input.endswith(">"):
             channel_id = int(channel_input[2:-1])
             channel = ctx.guild.get_channel(channel_id)
-        else:
+        elif channel_input.isdigit():
             try:
                 channel_id = int(channel_input)
                 channel = ctx.guild.get_channel(channel_id)
             except ValueError:
                 channel = None
+        else:
+            channel = None
         
         return channel
 
