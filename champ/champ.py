@@ -33,7 +33,13 @@ class Champ(commands.Cog):
                 return
 
         if user and channel and role:
-            message = f"{name} champion is {user.mention}, received a role {role.mention}"
+            message = f"@everyone\n\
+## 🎉 {name} 🎉\n\
+**We’re super excited to announce our Weekly Champion 🌟 {user.mention} has truly shined with their outstanding study hours and dedication. As a special reward, {user.mention} will get the exclusive Champion role 🏆 and a spotlight on our members list.\n\n\
+Big congrats, {user.mention}! Your hard work is a huge inspiration to all of us. Keep up the amazing effort, and let’s all keep pushing towards our goals together! 🚀✨ **\n\
+{role.mention}\n\n\
+> ## 🎓 STUDYLINK TEAM"
+            
             await channel.send(message)
         else:
             await ctx.send("Invalid user ID, role ID, or channel ID.")
