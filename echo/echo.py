@@ -12,13 +12,13 @@ class Echo(commands.Cog):
     async def echo(self, ctx, *, args):
         """Echo a message to a specified channel or the current channel."""
         # Split args by spaces
-        args = args.split(maxsplit=1)
+        args = args.split(maxsplit=2)
         
         if len(args) < 2:
-            await ctx.send("Invalid usage. Use `-echo <channel> <message>`.")
+            await ctx.send("Invalid usage. Use `-echo <message> <channel_id> <message_id>`.")
             return
         
-        channel_input, message = args
+        message, channel_input, message_id = args
         
         # Check if channel_input is a channel mention
         if channel_input.startswith("<#") and channel_input.endswith(">"):
@@ -35,7 +35,12 @@ class Echo(commands.Cog):
             await ctx.send(f"Channel with ID {channel_id} not found.")
             return
         
-        await channel.send(message.strip())
+        try:
+            message_id = int(message_id)
+            msg = await channel.fetch_message(message_id)
+            await msg.reply(message)
+        except ValueError:
+            await channel.send(message.strip())
 
     @echo.error
     async def echo_error(self, ctx, error):
