@@ -1,0 +1,9 @@
+	{
+    "author" : ["theahmedmuneeb"],
+    "install_msg" : "Thank you for installing my cog!",
+    "name" : "echo",
+    "short" : "send messages to channel",
+    "description" : "send messages to channel",
+    "tags" : ["echo"],
+    "end_user_data_statement": "This cog does not store any End User Data."
+}
