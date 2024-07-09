@@ -11,15 +11,41 @@ class Echo(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def echo(self, ctx, *, args):
         """Echo a message to a specified channel or the current channel."""
-        # Split args by spaces
-        args = args.split(maxsplit=2)
-        
-        if len(args) < 2:
-            await ctx.send("Invalid usage. Use `-echo <message> <channel_id> <message_id>`.")
-            return
-        
-        message, channel_input, message_id = args
-        
+        # Split args by first two spaces to separate message, channel_id, and message_id
+        try:
+            message, rest = args.split(maxsplit=1)
+            rest = rest.split(maxsplit=2)
+        except ValueError:
+            message = args
+            rest = []
+
+        if not rest:
+            channel = ctx.channel
+        elif len(rest) == 1:
+            channel = await self.get_channel(ctx, rest[0])
+            message = None
+        else:
+            channel = await self.get_channel(ctx, rest[0])
+            message_id = rest[1]
+
+        if message:
+            if channel:
+                if message_id:
+                    try:
+                        message_id = int(message_id)
+                        msg = await channel.fetch_message(message_id)
+                        await msg.reply(message)
+                    except ValueError:
+                        await ctx.send("Invalid message ID provided.")
+                else:
+                    await channel.send(message.strip())
+            else:
+                await ctx.send("Channel not found.")
+        else:
+            await ctx.send("No message provided.")
+
+    async def get_channel(self, ctx, channel_input):
+        """Helper function to get channel object from input."""
         # Check if channel_input is a channel mention
         if channel_input.startswith("<#") and channel_input.endswith(">"):
             channel_id = int(channel_input[2:-1])
@@ -29,18 +55,9 @@ class Echo(commands.Cog):
                 channel_id = int(channel_input)
                 channel = ctx.guild.get_channel(channel_id)
             except ValueError:
-                channel = ctx.channel  # Default to current channel
+                channel = None
         
-        if not channel:
-            await ctx.send(f"Channel with ID {channel_id} not found.")
-            return
-        
-        try:
-            message_id = int(message_id)
-            msg = await channel.fetch_message(message_id)
-            await msg.reply(message)
-        except ValueError:
-            await channel.send(message.strip())
+        return channel
 
     @echo.error
     async def echo_error(self, ctx, error):
