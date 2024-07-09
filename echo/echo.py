@@ -9,20 +9,22 @@ class Echo(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def echo(self, ctx, channel_id: int, *, message: str):
+    async def echo(self, ctx, channel: discord.TextChannel = None, *, message: str):
         """Echo a message to a specified channel."""
-        channel = self.bot.get_channel(channel_id)
-        if not channel:
-            await ctx.send(f"Channel with ID {channel_id} not found.")
-            return
+        if channel is None:
+            channel = ctx.channel  # Use the current channel if none is provided
         
         await channel.send(message)
-        await ctx.send(f"Message echoed to <#{channel_id}>.")
+        await ctx.send(f"Message echoed to {channel.mention}.")
 
     @echo.error
     async def echo_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("You don't have permission to use this command.")
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print(f"{self.__class__.__name__} cog has been loaded.")
 
 def setup(bot):
     bot.add_cog(Echo(bot))
