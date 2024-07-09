@@ -9,44 +9,31 @@ class Echo(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def echo(self, ctx, *, args):
-        """Echo a message to a specified channel or the current channel."""
-        # Split args by first two spaces to separate message, channel_id, and message_id
-        try:
-            message, rest = args.split(maxsplit=1)
-            rest = rest.split(maxsplit=2)
-        except ValueError:
-            message = args
-            rest = []
-
-        if not rest:
+    async def echo(self, ctx, channel_input: str = None, message_id: int = None, *, message: str):
+        """Echo a message to a specified channel or reply to a message."""
+        # Determine the channel to send/reply message
+        if channel_input:
+            channel = await self.get_channel(ctx, channel_input)
+        else:
             channel = ctx.channel
-        elif len(rest) == 1:
-            channel = await self.get_channel(ctx, rest[0])
-            message = None
-        else:
-            channel = await self.get_channel(ctx, rest[0])
-            message_id = rest[1]
 
-        if message:
-            if channel:
-                if message_id:
-                    try:
-                        message_id = int(message_id)
-                        msg = await channel.fetch_message(message_id)
-                        await msg.reply(message)
-                    except ValueError:
-                        await ctx.send("Invalid message ID provided.")
-                else:
-                    await channel.send(message.strip())
-            else:
-                await ctx.send("Channel not found.")
+        if not channel:
+            await ctx.send(f"Invalid channel ID or mention. Sending message to current channel.")
+            channel = ctx.channel
+        
+        # If message_id is provided, reply to the message with message_id
+        if message_id:
+            try:
+                msg = await channel.fetch_message(message_id)
+                await msg.reply(message)
+            except discord.NotFound:
+                await ctx.send(f"Message with ID {message_id} not found in {channel.mention}. Sending message to {channel.mention}.")
+                await channel.send(message)
         else:
-            await ctx.send("No message provided.")
+            await channel.send(message)
 
     async def get_channel(self, ctx, channel_input):
         """Helper function to get channel object from input."""
-        # Check if channel_input is a channel mention
         if channel_input.startswith("<#") and channel_input.endswith(">"):
             channel_id = int(channel_input[2:-1])
             channel = ctx.guild.get_channel(channel_id)
