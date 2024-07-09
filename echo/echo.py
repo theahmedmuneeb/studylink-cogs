@@ -36,7 +36,6 @@ class Echo(commands.Cog):
             return
         
         await channel.send(message.strip())
-        await ctx.send(f"Message echoed to {channel.mention}.")
 
     @echo.error
     async def echo_error(self, ctx, error):
