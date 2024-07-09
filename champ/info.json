@@ -1,0 +1,9 @@
+	{
+    "author" : ["theahmedmuneeb"],
+    "install_msg" : "Thank you for installing my cog!",
+    "name" : "champ",
+    "short" : "send champion announcements",
+    "description" : "send champion announcements with one command",
+    "tags" : ["champ"],
+    "end_user_data_statement": "This cog does not store any End User Data."
+}
