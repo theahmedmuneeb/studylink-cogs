@@ -3,7 +3,7 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import box
 
-class ChampAnnouncement(commands.Cog):
+class Champ(commands.Cog):
     """A cog for making announcements."""
 
     def __init__(self, bot: Red):
@@ -53,4 +53,4 @@ class ChampAnnouncement(commands.Cog):
         print(f"{self.__class__.__name__} cog has been loaded.")
 
 def setup(bot: Red):
-    bot.add_cog(ChampAnnouncement(bot))
+    bot.add_cog(Champ(bot))
