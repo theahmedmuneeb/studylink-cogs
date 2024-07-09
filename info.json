@@ -1,0 +1,8 @@
+{
+    "author" : ["theahmedmuneeb"],
+    "install_msg" : "Repo studylink-cogs successfully installed",
+    "name" : "studylink-cogs",
+    "short" : "custom cogs for studylink",
+    "description" : "custom cogs for studylink functions",
+    "tags" : [""]
+}
