@@ -94,12 +94,9 @@ class SLSchedule(commands.Cog):
         ctx = await self.bot.get_context(self.bot)
         if command.startswith('/'):
             # Handle slash commands
-            slash_command_name = command[1:]
-            interaction = discord.Interaction(data={"name": slash_command_name, "options": []}, state=self.bot._connection)
-            interaction.guild_id = ctx.guild.id
-            interaction.channel_id = ctx.channel.id
-            interaction.user = ctx.author
-            await self.bot.process_application_commands(interaction)
+            slash_command = self.bot.get_slash_command(command[1:])
+            if slash_command:
+                await slash_command(ctx)
         else:
             # Handle regular commands
             await ctx.invoke(await self.bot.get_command(command))
