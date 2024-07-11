@@ -1,3 +1,3 @@
-from .echo import Echo
+from .slschedule import SLSchedule
 async def setup(bot):
-    await bot.add_cog(Echo(bot))
+    await bot.add_cog(SLSchedule(bot))
