@@ -18,15 +18,8 @@ class SendDM(commands.Cog):
         message = self.process_custom_tags(message)
         
         try:
-            # Fetch message to reply to if message_id is provided
-            if message_id:
-                try:
-                    original_message = await ctx.channel.fetch_message(message_id)
-                    await original_message.reply(message)
-                except:
-                    await user.send(message)
-            else:
-                await user.send(message)
+            # Send the message to the user without replying to the original message
+            await user.send(message)
             await ctx.send(f"Message sent to {user}.")
         except Exception as e:
             await ctx.send(f"Failed to send message: {str(e)}")
