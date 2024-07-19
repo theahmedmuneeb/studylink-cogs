@@ -1,0 +1,9 @@
+	{
+    "author" : ["theahmedmuneeb"],
+    "install_msg" : "Thank you for installing my cog!",
+    "name" : "msg",
+    "short" : "send messages to dm",
+    "description" : "send messages to dm",
+    "tags" : ["msg"],
+    "end_user_data_statement": "This cog does not store any End User Data."
+}
