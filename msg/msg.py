@@ -18,8 +18,17 @@ class SendDM(commands.Cog):
         message = self.process_custom_tags(message)
         
         try:
-            # Send the message to the user without replying to the original message
-            await user.send(message)
+            if message_id:
+                # Fetch the original message from the user's DM channel
+                dm_channel = user.dm_channel
+                if dm_channel is None:
+                    dm_channel = await user.create_dm()
+                
+                original_message = await dm_channel.fetch_message(message_id)
+                await original_message.reply(message)
+            else:
+                await user.send(message)
+                
             await ctx.send(f"Message sent to {user}.")
         except Exception as e:
             await ctx.send(f"Failed to send message: {str(e)}")
