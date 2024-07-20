@@ -19,22 +19,22 @@ class Echo(commands.Cog):
         if not channel and message_id:
             try:
                 msg = await ctx.channel.fetch_message(message_id)
-                await msg.reply(message)
+                await msg.reply(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
                 return
             except discord.NotFound:
                 pass
 
         if not channel and message:
-            await ctx.send(message)
+            await ctx.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         elif channel and message_id:
             try:
                 msg = await channel.fetch_message(message_id)
-                await msg.reply(message)
+                await msg.reply(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
             except discord.NotFound:
                 await ctx.send(f"Message with ID {message_id} not found in {channel.mention}. Sending message to {channel.mention}.")
-                await channel.send(message)
+                await channel.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         elif channel:
-            await channel.send(message)
+            await channel.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         else:
             await ctx.send("Invalid usage. Use `-echo [- | <channel_id> | #channel] [<message_id>] <message>`.")
 
