@@ -1,5 +1,6 @@
 import discord
 from redbot.core import commands
+import re
 
 class Echo(commands.Cog):
     """A cog for echoing messages to specified channels."""
@@ -19,27 +20,28 @@ class Echo(commands.Cog):
         else:
             channel = await self.get_channel(ctx, channel_input)
 
-        message = self.format_message(message)
+        # Format the message to replace custom emoji syntax
+        formatted_message = self.format_message(message)
 
         if not channel and message_id:
             try:
                 msg = await ctx.channel.fetch_message(message_id)
-                await msg.reply(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
+                await msg.reply(formatted_message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
                 return
             except discord.NotFound:
                 pass
 
-        if not channel and message:
-            await ctx.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
+        if not channel and formatted_message:
+            await ctx.send(formatted_message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         elif channel and message_id:
             try:
                 msg = await channel.fetch_message(message_id)
-                await msg.reply(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
+                await msg.reply(formatted_message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
             except discord.NotFound:
                 await ctx.send(f"Message with ID {message_id} not found in {channel.mention}. Sending message to {channel.mention}.")
-                await channel.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
+                await channel.send(formatted_message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         elif channel:
-            await channel.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
+            await channel.send(formatted_message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         else:
             await ctx.send("Invalid usage. Use `-echo [- | <channel_id> | #channel | [{channel_id}]] [<message_id>] <message>`.")
 
@@ -64,17 +66,16 @@ class Echo(commands.Cog):
 
     def format_message(self, message):
         """Helper function to format custom emoji syntax in the message."""
-        import re
-        # Replace [{; emojiname; emojiid}] with <:emojiname:emojiid>
-        custom_emoji_pattern = re.compile(r"\[\{;(.*?); (.*?);}]")
-        matches = custom_emoji_pattern.findall(message)
-        for match in matches:
-            emoji_name = match[0]
-            emoji_id = match[1]
-            emoji = f"<:{emoji_name}:{emoji_id}>"
-            message = message.replace(f"[{{;{emoji_name}; {emoji_id};}}]", emoji)
+        # Replace [{;emojiname; emojiid}] with <:emojiname:emojiid>
+        custom_emoji_pattern = re.compile(r"\[\{;(.*?); (\d+);}]")
+        def replace_emoji(match):
+            emoji_name = match.group(1)
+            emoji_id = match.group(2)
+            return f"<:{emoji_name}:{emoji_id}>"
         
-        return message
+        formatted_message = custom_emoji_pattern.sub(replace_emoji, message)
+        
+        return formatted_message
 
     @echo.error
     async def echo_error(self, ctx, error):
