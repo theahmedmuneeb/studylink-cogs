@@ -66,7 +66,7 @@ class Echo(commands.Cog):
         """Helper function to format custom emoji and channel syntax in the message."""
         import re
         # Replace [{; emojiname; emojiid}] with <:emojiname:emojiid>
-        custom_emoji_pattern = re.compile(r"\[{;(.*?); (.*?);}]")
+        custom_emoji_pattern = re.compile(r"\[\{;(.*?); (.*?);}]")
         matches = custom_emoji_pattern.findall(message)
         for match in matches:
             emoji_name = match[0]
