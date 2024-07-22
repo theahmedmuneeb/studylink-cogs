@@ -10,11 +10,16 @@ class Echo(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def echo(self, ctx, channel_input: str = None, message_id: int = None, *, message: str):
-        """Echo a message to a specified channel or reply to a message."""
+        """Echo a message to a specified channel or reply to a message.
+        
+        Usage: -echo [- | <channel_id> | #channel | [{channel_id}]] [<message_id>] <message>
+        """
         if channel_input == "-":
             channel = ctx.channel
         else:
             channel = await self.get_channel(ctx, channel_input)
+
+        message = await self.format_message(ctx, message)
 
         if not channel and message_id:
             try:
@@ -36,12 +41,15 @@ class Echo(commands.Cog):
         elif channel:
             await channel.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         else:
-            await ctx.send("Invalid usage. Use `-echo [- | <channel_id> | #channel] [<message_id>] <message>`.")
+            await ctx.send("Invalid usage. Use `-echo [- | <channel_id> | #channel | [{channel_id}]] [<message_id>] <message>`.")
 
     async def get_channel(self, ctx, channel_input):
         """Helper function to get channel object from input."""
         if channel_input.startswith("<#") and channel_input.endswith(">"):
             channel_id = int(channel_input[2:-1])
+            channel = ctx.guild.get_channel(channel_id)
+        elif channel_input.startswith("[{") and channel_input.endswith("}]"):
+            channel_id = int(channel_input[2:-2])
             channel = ctx.guild.get_channel(channel_id)
         elif channel_input.isdigit():
             try:
@@ -53,6 +61,20 @@ class Echo(commands.Cog):
             channel = None
         
         return channel
+
+    async def format_message(self, ctx, message):
+        """Helper function to format custom emoji and channel syntax in the message."""
+        import re
+        # Replace [{; emojiname; emojiid}] with <:emojiname:emojiid>
+        custom_emoji_pattern = re.compile(r"\[{;(.*?); (.*?);}]")
+        matches = custom_emoji_pattern.findall(message)
+        for match in matches:
+            emoji_name = match[0]
+            emoji_id = match[1]
+            emoji = f"<:{emoji_name}:{emoji_id}>"
+            message = message.replace(f"[{{;{emoji_name}; {emoji_id};}}]", emoji)
+        
+        return message
 
     @echo.error
     async def echo_error(self, ctx, error):
