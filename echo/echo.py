@@ -68,12 +68,7 @@ class Echo(commands.Cog):
         """Helper function to format custom emoji syntax in the message."""
         # Replace [{;emojiname; emojiid}] with <:emojiname:emojiid>
         custom_emoji_pattern = re.compile(r"\[\{;(.*?); (\d+);}]")
-        def replace_emoji(match):
-            emoji_name = match.group(1)
-            emoji_id = match.group(2)
-            return f"<:{emoji_name}:{emoji_id}>"
-        
-        formatted_message = custom_emoji_pattern.sub(replace_emoji, message)
+        formatted_message = custom_emoji_pattern.sub(r"<:\1:\2>", message)
         
         return formatted_message
 
