@@ -19,7 +19,7 @@ class Echo(commands.Cog):
         else:
             channel = await self.get_channel(ctx, channel_input)
 
-        message = await self.format_message(ctx, message)
+        message = self.format_message(message)
 
         if not channel and message_id:
             try:
@@ -62,8 +62,8 @@ class Echo(commands.Cog):
         
         return channel
 
-    async def format_message(self, ctx, message):
-        """Helper function to format custom emoji and channel syntax in the message."""
+    def format_message(self, message):
+        """Helper function to format custom emoji syntax in the message."""
         import re
         # Replace [{; emojiname; emojiid}] with <:emojiname:emojiid>
         custom_emoji_pattern = re.compile(r"\[\{;(.*?); (.*?);}]")
