@@ -1,5 +1,6 @@
 import discord
 from redbot.core import commands
+import re
 
 class Echo(commands.Cog):
     """A cog for echoing messages to specified channels."""
@@ -15,6 +16,9 @@ class Echo(commands.Cog):
             channel = ctx.channel
         else:
             channel = await self.get_channel(ctx, channel_input)
+
+        # Replace custom emoji patterns with actual emoji representation
+        message = self.replace_custom_emoji_format(message)
 
         if not channel and message_id:
             try:
@@ -37,6 +41,12 @@ class Echo(commands.Cog):
             await channel.send(message, allowed_mentions=discord.AllowedMentions(everyone=True, roles=True))
         else:
             await ctx.send("Invalid usage. Use -echo [- | <channel_id> | #channel] [<message_id>] <message>.")
+
+    def replace_custom_emoji_format(self, message):
+        """Helper function to replace custom emoji format [{EMOJI_NAME;EMOJI_ID}] with Discord format <:EMOJI_NAME:EMOJI_ID>."""
+        pattern = r"\[\{(\w+);(\d+)\}\]"
+        replacement = r"<:\1:\2>"
+        return re.sub(pattern, replacement, message)
 
     async def get_channel(self, ctx, channel_input):
         """Helper function to get channel object from input."""
