@@ -17,6 +17,7 @@ class LSD(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def lsd(self, ctx, member: discord.Member):
+        """Add the specified role to a user."""
         if not await self.has_permission(ctx):
             return
         
@@ -30,8 +31,10 @@ class LSD(commands.Cog):
         await member.add_roles(role)
         await ctx.message.delete()
 
-    @lsd.group()
-    async def role(self, ctx, role: discord.Role):
+    @commands.command()
+    @commands.guild_only()
+    async def lsdrole(self, ctx, role: discord.Role):
+        """Set the role to be managed by this cog."""
         if not await self.has_permission(ctx):
             return
         
@@ -39,8 +42,10 @@ class LSD(commands.Cog):
         await ctx.send(f"Role `{role.name}` has been set.")
         await ctx.message.delete()
 
-    @lsd.command()
-    async def list(self, ctx):
+    @commands.command()
+    @commands.guild_only()
+    async def lsdlist(self, ctx):
+        """List all users with the specified role."""
         if not await self.has_permission(ctx):
             return
         
@@ -57,8 +62,10 @@ class LSD(commands.Cog):
         await ctx.send(embed=embed)
         await ctx.message.delete()
 
-    @lsd.command()
-    async def guru(self, ctx, member: discord.Member):
+    @commands.command()
+    @commands.guild_only()
+    async def lsdguru(self, ctx, member: discord.Member):
+        """Add a user who can use the commands."""
         if not ctx.author.guild_permissions.administrator:
             return
 
@@ -71,8 +78,10 @@ class LSD(commands.Cog):
         
         await ctx.message.delete()
 
-    @lsd.command()
-    async def x(self, ctx, member: discord.Member):
+    @commands.command()
+    @commands.guild_only()
+    async def lsdx(self, ctx, member: discord.Member):
+        """Remove the specified role from a user."""
         if not await self.has_permission(ctx):
             return
         
