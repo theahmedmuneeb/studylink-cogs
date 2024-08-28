@@ -17,7 +17,7 @@ class LSD(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def lsd(self, ctx, member: discord.Member):
-        """Add the specified role to a user."""
+        """Add the specified role to a user and welcome them."""
         if not await self.has_permission(ctx):
             return
         
@@ -29,6 +29,7 @@ class LSD(commands.Cog):
             return
 
         await member.add_roles(role)
+        await ctx.send(f"Welcome {member.mention}!")
         await ctx.message.delete()
 
     @commands.command()
