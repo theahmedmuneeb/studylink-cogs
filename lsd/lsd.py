@@ -30,7 +30,7 @@ class LSD(commands.Cog):
 
         await member.add_roles(role)
         await ctx.send(f"Welcome {member.mention}!")
-        await ctx.message.delete()
+        
 
     @commands.command()
     @commands.guild_only()
@@ -95,6 +95,36 @@ class LSD(commands.Cog):
 
         await member.remove_roles(role)
         await ctx.send(f"Role `{role.name}` has been removed from {member.mention}.")
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.guild_only()
+    async def lsdgurux(self, ctx, member: discord.Member):
+        """Remove a user from the guru list."""
+        if not ctx.author.guild_permissions.administrator:
+            return
+
+        async with self.config.guild(ctx.guild).guru() as gurus:
+            if member.id in gurus:
+                gurus.remove(member.id)
+                await ctx.send(f"{member.mention} has been removed from the guru list.")
+            else:
+                await ctx.send(f"{member.mention} is not a guru.")
+        
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.guild_only()
+    async def lsdgurulist(self, ctx):
+        """List all users in the guru list."""
+        if not ctx.author.guild_permissions.administrator:
+            return
+
+        gurus = await self.config.guild(ctx.guild).guru()
+        members = [ctx.guild.get_member(guru_id).mention for guru_id in gurus if ctx.guild.get_member(guru_id)]
+
+        embed = discord.Embed(title="Guru List", description="\n".join(members) or "None", color=discord.Color.green())
+        await ctx.send(embed=embed)
         await ctx.message.delete()
 
 def setup(bot):
